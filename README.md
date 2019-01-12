@@ -1,6 +1,7 @@
 ## Content
 
 Guide - http://aksworkshop.io/
+
 App - https://github.com/Azure/azch-captureorder
 
 ## Deploy Kubernetes cluster
@@ -25,7 +26,7 @@ helm install --name orders-mongo stable/mongodb --set mongodbUsername=orders-use
 
 ## Run Capture API container / create service
 
-Update manifest with team name and application insights insturmentation key
+Update manifest with team name and application insights instrumentation key
 
 ```
 kubectl apply -f provision-order.yaml
@@ -46,7 +47,7 @@ export CONCURRENT=300
 docker run --rm -it azch/loadtest -z $DURATION -c $CONCURRENT -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}' -H "Content-Type: application/json" -m POST $URL
 ```
 
-## Configure log streeming
+## Configure log streaming
 
 ```
 kubectl apply -f logreader-rbac.yaml
