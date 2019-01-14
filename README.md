@@ -42,7 +42,7 @@ helm install --name orders-mongo stable/mongodb --set mongodbUsername=orders-use
 Run an instances of the Capture API application. Update the manifest with a team name and application insights instrumentation key.
 
 ```
-kubectl apply -f provision-order.yaml
+kubectl apply -f capture-order-api.yaml
 ```
 
 ## Submit order
@@ -55,7 +55,7 @@ curl -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}
 
 ## Spam orders
 
-Generate traffic to the application with the following operation.
+Generate traffic to the application with the following operation. Update the IP address with the external IP given to the applications Kubernete service.
 
 ```
 export URL=http://23.96.36.227/v1/order
