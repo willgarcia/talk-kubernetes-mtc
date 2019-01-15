@@ -33,11 +33,11 @@ spec:
               cpu: "500m"
           env:
           - name: CHALLENGEAPPINSIGHTS_KEY
-            value: "088b6f33-265d-4895-89c4-04426620c66e"
+            value: ""
           - name: TEAMNAME
-            value: "nepeters"
+            value: "nepeters003"
           - name: APPINSIGHTS_KEY
-            value: "088b6f33-265d-4895-89c4-04426620c66e"
+            value: ""
           - name: MONGOHOST
             value: "orders-mongo-mongodb.default.svc.cluster.local"
           - name: MONGOUSER

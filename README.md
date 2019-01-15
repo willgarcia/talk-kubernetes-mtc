@@ -4,6 +4,7 @@ This repo includes assets and commands needed to complete the AKS challenge. The
 
 - Guide - http://aksworkshop.io/
 - App - https://github.com/Azure/azch-captureorder
+- My fork - https://github.com/neilpeterson/azch-captureorder
 
 ## Deploy Kubernetes cluster
 
@@ -11,7 +12,7 @@ First, deploy an Azure Kubernetes Cluster.
 
 ```
 az group create --name mtc-workshop --location eastus
-az aks create --name mtc-workshop --resource-group mtc-workshop --kubernetes-version 1.11.5 --enable-addons monitoring
+az aks create --name mtc-workshop --resource-group mtc-workshop --kubernetes-version 1.11.5 --enable-addons monitoring --generate-ssh-keys
 ```
 
 Once completed, get the cluster credentials.
@@ -47,20 +48,20 @@ kubectl apply -f capture-order-api.yaml
 
 ## Submit order
 
-To validate that the application is functional, submit an order with this command. Update the IP address with the external IP given to the applications Kubernete service.
+To validate that the application is functional, submit an order with this command. Update the IP address with the external IP given to the applications Kubernetes service.
 
 ```
-curl -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}' -H "Content-Type: application/json" -X POST http://23.96.36.227/v1/order
+curl -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}' -H "Content-Type: application/json" -X POST http://13.90.251.220/v1/order
 ```
 
 ## Spam orders
 
-Generate traffic to the application with the following operation. Update the IP address with the external IP given to the applications Kubernete service.
+Generate traffic to the application with the following operation. Update the IP address with the external IP given to the applications Kubernetes service.
 
 ```
-export URL=http://23.96.36.227/v1/order
+export URL=http://40.121.95.43/v1/order
 export DURATION=1m
-export CONCURRENT=300
+export CONCURRENT=2000
 docker run --rm -it azch/loadtest -z $DURATION -c $CONCURRENT -d '{"EmailAddress": "email@domain.com", "Product": "prod-1", "Total": 100}' -H "Content-Type: application/json" -m POST $URL
 ```
 
@@ -81,7 +82,7 @@ kubectl create -f captureorder-hpa.yaml
 ## Create Azure Container Registry
 
 ```
-az acr create --resource-group mtc-workshop --name mtcworkshop007 --sku Standard --location eastus
+az acr create --resource-group mtc-workshop --name mtcworkshop008 --sku Standard --location eastus
 ```
 
 Login with the Azure CLI.
