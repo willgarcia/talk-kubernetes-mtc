@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    include:
+    - updated-azd-yaml
+
+variables:
+- group: azureContainerRegistry
+- name: imageName
+  value: '$(acrFQDN)/captureorder'
+
+jobs:
+
+# Unit Tests: Need to populate
+- job: BuildTest
+  displayName: Build and Test
+  pool:
+    vmImage: 'Ubuntu 16.04'
+
+  steps:
+  - script: echo "Insert Unit Tests Here"
+    displayName: Unit Tests
+
+# Create container image and push to ACR
+- job: CreateContainerImages
+  displayName: Create Container Images
+  pool:
+    vmImage: 'Ubuntu 16.04'
+
+  steps:
+  - script: docker build -f Dockerfile -t $(imageName):$(Build.BuildId) .
+    displayName: 'docker build'
+
+  - script: docker login $(acrFQDN) -u $(dockerId) -p $(dockerPassword)
+    displayName: 'docker login'
+
+  - script: docker push $(imageName):$(Build.BuildId)
+    displayName: 'docker push'
+
+# Package Helm chart and push to ACR
+- job: ReleaseChart
+  displayName: Create Helm Chart
+  pool:
+    vmImage: 'Ubuntu 16.04'
+
+  steps:
+  - task: AzureCLI@1
+    displayName: Az Login
+    inputs:
+      connectedServiceNameARM: 'AzureConnection'
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr login --name $(acrName)
+
+  - task: HelmDeploy@0
+    displayName: helm init --client-only
+    inputs:
+      azureSubscriptionEndpoint: 'AzureConnection'
+      azureResourceGroup: aks-quality-assurance
+      kubernetesCluster: aks-quality-assurance
+      command: init
+      upgradeTiller: false
+      arguments: '--client-only'
+
+  - task: HelmDeploy@0
+    displayName: helm package
+    inputs:
+      command: package
+      chartPath: 'chart/capture-orders'
+      arguments: '--version $(Build.BuildId)'
+
+  - task: AzureCLI@1
+    displayName: AZ ACR helm push
+    inputs:
+      connectedServiceNameARM: 'AzureConnection'
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr helm push -n $(acrName) /home/vsts/work/1/a/capture-orders-$(Build.BuildId).tgz
